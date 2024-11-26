@@ -33,10 +33,7 @@ const App = () => {
           <div className="container py-8">
             <Routes>
               <Route path="/" element={<div>Dashboard</div>} />
-              <Route
-                path="/profile"
-                element={<UserProfile user={user} onUpdate={setUser} />}
-              />
+              <Route path="/chat" element={<div>AI Chat Assistant</div>} />
               <Route path="/image" element={<div>Image Generation</div>} />
               <Route path="/video" element={<div>Video Creation</div>} />
               <Route path="/diagrams" element={<div>Diagrams</div>} />
