@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { UserProfile } from "./components/UserProfile";
+import { ChatAssistant } from "./components/ChatAssistant";
 import { User } from "./types";
 
 const mockUser: User = {
@@ -33,7 +34,7 @@ const App = () => {
           <div className="container py-8">
             <Routes>
               <Route path="/" element={<div>Dashboard</div>} />
-              <Route path="/chat" element={<div>AI Chat Assistant</div>} />
+              <Route path="/chat" element={<ChatAssistant />} />
               <Route path="/image" element={<div>Image Generation</div>} />
               <Route path="/video" element={<div>Video Creation</div>} />
               <Route path="/diagrams" element={<div>Diagrams</div>} />
