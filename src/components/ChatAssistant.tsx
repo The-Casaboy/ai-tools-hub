@@ -37,20 +37,32 @@ export const ChatAssistant = () => {
         },
         body: JSON.stringify({
           model: 'gpt-4',
-          messages: [...messages, userMessage],
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
         })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get response from OpenAI');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `API Error: ${response.status}`);
       }
 
       const data = await response.json();
-      const assistantMessage = data.choices[0].message;
+      if (!data.choices?.[0]?.message) {
+        throw new Error('Invalid response format from API');
+      }
+
+      const assistantMessage = {
+        role: 'assistant' as const,
+        content: data.choices[0].message.content
+      };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      toast.error('Failed to get response from AI');
-      console.error(error);
+      toast.error(error instanceof Error ? error.message : 'Failed to get response from AI');
+      // Remove the failed user message
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
