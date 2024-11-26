@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { toast } from "sonner";
 
 interface Message {
@@ -10,15 +11,15 @@ interface Message {
 export const ChatAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) {
-      toast.error("Please add your OpenAI API key to the environment variables");
+      toast.error("Please enter your OpenAI API key first");
       return;
     }
 
@@ -57,6 +58,16 @@ export const ChatAssistant = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <div className="mb-4">
+        <Input
+          type="password"
+          placeholder="Enter your OpenAI API key"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          className="max-w-md mx-auto"
+        />
+      </div>
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message, index) => (
           <div
@@ -84,14 +95,14 @@ export const ChatAssistant = () => {
           </div>
         )}
       </div>
+      
       <form onSubmit={handleSubmit} className="p-4 border-t">
         <div className="flex gap-2">
-          <input
+          <Input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 p-2 bg-background border rounded-md"
             disabled={isLoading}
           />
           <Button type="submit" disabled={isLoading}>
