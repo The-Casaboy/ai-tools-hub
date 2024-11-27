@@ -32,7 +32,8 @@ export const TextGeneration = () => {
     }
 
     setIsLoading(true);
-    const newMessages = [...messages, { role: "user", content: input }];
+    const userMessage: Message = { role: "user", content: input };
+    const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput('');
 
@@ -41,20 +42,21 @@ export const TextGeneration = () => {
       const hf = new HfInference(formattedApiKey);
       
       const result = await hf.textGeneration({
-        model: 'gpt2',
-        inputs: input,
+        model: 'meta-llama/Llama-2-70b-chat-hf',
+        inputs: `<s>[INST] ${input} [/INST]`,
         parameters: {
-          max_new_tokens: 100,
+          max_new_tokens: 512,
           temperature: 0.7,
           top_p: 0.95,
           return_full_text: false,
         },
       });
 
-      setMessages([...newMessages, { 
+      const assistantMessage: Message = { 
         role: "assistant", 
         content: result.generated_text 
-      }]);
+      };
+      setMessages([...newMessages, assistantMessage]);
       toast.success("Text generated successfully!");
     } catch (error) {
       console.error('Hugging Face API Error:', error);

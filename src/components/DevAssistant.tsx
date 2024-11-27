@@ -32,7 +32,8 @@ export const DevAssistant = () => {
     }
 
     setIsLoading(true);
-    const newMessages = [...messages, { role: "user", content: input }];
+    const userMessage: Message = { role: "user", content: input };
+    const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput('');
 
@@ -57,10 +58,11 @@ ${input}
         },
       });
 
-      setMessages([...newMessages, { 
+      const assistantMessage: Message = { 
         role: "assistant", 
         content: result.generated_text 
-      }]);
+      };
+      setMessages([...newMessages, assistantMessage]);
       toast.success("Response generated successfully!");
     } catch (error) {
       console.error('Hugging Face API Error:', error);
