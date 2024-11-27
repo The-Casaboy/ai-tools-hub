@@ -36,7 +36,7 @@ export const ChatAssistant = () => {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4',  // Changed back to gpt-4 as the previous model name was incorrect
           messages: [...messages, userMessage].map(msg => ({
             role: msg.role,
             content: msg.content
