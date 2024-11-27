@@ -22,20 +22,30 @@ export const TextGeneration = () => {
     setIsLoading(true);
 
     try {
-      const hf = new HfInference(apiKey);
+      // Make sure to use the API key with "hf_" prefix if not already included
+      const formattedApiKey = apiKey.startsWith('hf_') ? apiKey : `hf_${apiKey}`;
+      const hf = new HfInference(formattedApiKey);
+      
       const result = await hf.textGeneration({
         model: 'gpt2',
         inputs: input,
         parameters: {
           max_new_tokens: 100,
           temperature: 0.7,
+          top_p: 0.95,
+          return_full_text: false,
         },
       });
 
       setOutput(result.generated_text);
       toast.success("Text generated successfully!");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to generate text');
+      console.error('Hugging Face API Error:', error);
+      toast.error(
+        error instanceof Error 
+          ? `API Error: ${error.message}` 
+          : 'Failed to generate text. Please check your API key and try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -44,23 +54,37 @@ export const TextGeneration = () => {
   return (
     <div className="flex flex-col space-y-4 max-w-2xl mx-auto">
       <div className="mb-4">
+        <label htmlFor="api-key" className="block text-sm font-medium mb-2">
+          Hugging Face API Key
+        </label>
         <Input
+          id="api-key"
           type="password"
-          placeholder="Enter your Hugging Face API key"
+          placeholder="Enter your Hugging Face API key (starts with 'hf_')"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
-          className="max-w-md mx-auto"
+          className="max-w-md"
         />
+        <p className="text-sm text-muted-foreground mt-1">
+          Your API key should start with 'hf_'. You can find it in your Hugging Face account settings.
+        </p>
       </div>
 
       <form onSubmit={handleGenerate} className="space-y-4">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter your prompt..."
-          disabled={isLoading}
-        />
-        <Button type="submit" disabled={isLoading}>
+        <div>
+          <label htmlFor="prompt" className="block text-sm font-medium mb-2">
+            Your Prompt
+          </label>
+          <Input
+            id="prompt"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter your prompt..."
+            disabled={isLoading}
+          />
+        </div>
+        
+        <Button type="submit" disabled={isLoading || !apiKey}>
           {isLoading ? "Generating..." : "Generate Text"}
         </Button>
       </form>
