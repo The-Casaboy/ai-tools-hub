@@ -27,11 +27,17 @@ export const TextGeneration = () => {
       
       const result = await hf.textGeneration({
         model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
-        inputs: input,
+        inputs: `<|im_start|>user
+${input}
+<|im_end|>
+<|im_start|>assistant
+`,
         parameters: {
-          max_new_tokens: 100,
+          max_new_tokens: 512,
           temperature: 0.7,
           top_p: 0.95,
+          top_k: 50,
+          repetition_penalty: 1.1,
           return_full_text: false,
         },
       });
