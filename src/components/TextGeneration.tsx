@@ -3,6 +3,7 @@ import { HfInference } from "@huggingface/inference";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
+import { useApiKey } from "../hooks/useApiKey";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,12 +12,13 @@ interface Message {
 
 export const TextGeneration = () => {
   const [input, setInput] = useState('');
-  const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem('textGenerationMessages');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const { data: apiKey, isLoading: isLoadingKey, error: apiKeyError } = useApiKey("huggingface");
 
   useEffect(() => {
     localStorage.setItem('textGenerationMessages', JSON.stringify(messages));
@@ -33,7 +35,7 @@ export const TextGeneration = () => {
     if (!input.trim()) return;
 
     if (!apiKey) {
-      toast.error("Please enter your Hugging Face API key first");
+      toast.error("No Hugging Face API key found in the database");
       return;
     }
 
@@ -44,8 +46,7 @@ export const TextGeneration = () => {
     setInput('');
 
     try {
-      const formattedApiKey = apiKey.startsWith('hf_') ? apiKey : `hf_${apiKey}`;
-      const hf = new HfInference(formattedApiKey);
+      const hf = new HfInference(apiKey);
       
       const conversationHistory = formatConversationHistory(messages);
       const prompt = `${conversationHistory}
@@ -79,32 +80,19 @@ ${input}
       toast.error(
         error instanceof Error 
           ? `API Error: ${error.message}` 
-          : 'Failed to generate text. Please check your API key and try again.'
+          : 'Failed to generate text. Please check the API key in the database.'
       );
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (apiKeyError) {
+    return <div className="text-red-500">Error loading API key: {apiKeyError.message}</div>;
+  }
+
   return (
     <div className="flex flex-col space-y-4 max-w-2xl mx-auto">
-      <div className="mb-4">
-        <label htmlFor="api-key" className="block text-sm font-medium mb-2">
-          Hugging Face API Key
-        </label>
-        <Input
-          id="api-key"
-          type="password"
-          placeholder="Enter your Hugging Face API key (starts with 'hf_')"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          className="max-w-md"
-        />
-        <p className="text-sm text-muted-foreground mt-1">
-          Your API key should start with 'hf_'. You can find it in your Hugging Face account settings.
-        </p>
-      </div>
-
       <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {messages.map((message, index) => (
           <div
@@ -130,11 +118,11 @@ ${input}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Enter your prompt..."
-            disabled={isLoading}
+            disabled={isLoading || isLoadingKey}
           />
         </div>
         
-        <Button type="submit" disabled={isLoading || !apiKey}>
+        <Button type="submit" disabled={isLoading || isLoadingKey || !apiKey}>
           {isLoading ? "Generating..." : "Generate Text"}
         </Button>
       </form>
