@@ -9,17 +9,17 @@ interface Message {
   content: string;
 }
 
-export const TextGeneration = () => {
+export const DevAssistant = () => {
   const [input, setInput] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
-    const saved = localStorage.getItem('textGenerationMessages');
+    const saved = localStorage.getItem('devAssistantMessages');
     return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('textGenerationMessages', JSON.stringify(messages));
+    localStorage.setItem('devAssistantMessages', JSON.stringify(messages));
   }, [messages]);
 
   const handleGenerate = async (e: React.FormEvent) => {
@@ -41,12 +41,18 @@ export const TextGeneration = () => {
       const hf = new HfInference(formattedApiKey);
       
       const result = await hf.textGeneration({
-        model: 'gpt2',
-        inputs: input,
+        model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        inputs: `<|im_start|>user
+${input}
+<|im_end|>
+<|im_start|>assistant
+`,
         parameters: {
-          max_new_tokens: 100,
+          max_new_tokens: 512,
           temperature: 0.7,
           top_p: 0.95,
+          top_k: 50,
+          repetition_penalty: 1.1,
           return_full_text: false,
         },
       });
@@ -55,7 +61,7 @@ export const TextGeneration = () => {
         role: "assistant", 
         content: result.generated_text 
       }]);
-      toast.success("Text generated successfully!");
+      toast.success("Response generated successfully!");
     } catch (error) {
       console.error('Hugging Face API Error:', error);
       toast.error(
