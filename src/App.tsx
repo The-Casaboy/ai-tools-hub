@@ -5,6 +5,7 @@ import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { UserProfile } from "./components/UserProfile";
 import { ChatAssistant } from "./components/ChatAssistant";
+import { TextGeneration } from "./components/TextGeneration";
 import { User } from "./types";
 
 const mockUser: User = {
@@ -35,6 +36,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<div>Dashboard</div>} />
               <Route path="/chat" element={<ChatAssistant />} />
+              <Route path="/text" element={<TextGeneration />} />
               <Route path="/image" element={<div>Image Generation</div>} />
               <Route path="/video" element={<div>Video Creation</div>} />
               <Route path="/diagrams" element={<div>Diagrams</div>} />
