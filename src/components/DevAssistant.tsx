@@ -22,6 +22,12 @@ export const DevAssistant = () => {
     localStorage.setItem('devAssistantMessages', JSON.stringify(messages));
   }, [messages]);
 
+  const formatConversationHistory = (messages: Message[]) => {
+    return messages.map(msg => 
+      `<|im_start|>${msg.role}\n${msg.content}\n<|im_end|>`
+    ).join('\n');
+  };
+
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -41,13 +47,17 @@ export const DevAssistant = () => {
       const formattedApiKey = apiKey.startsWith('hf_') ? apiKey : `hf_${apiKey}`;
       const hf = new HfInference(formattedApiKey);
       
-      const result = await hf.textGeneration({
-        model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
-        inputs: `<|im_start|>user
+      const conversationHistory = formatConversationHistory(messages);
+      const prompt = `${conversationHistory}
+<|im_start|>user
 ${input}
 <|im_end|>
 <|im_start|>assistant
-`,
+`;
+
+      const result = await hf.textGeneration({
+        model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        inputs: prompt,
         parameters: {
           max_new_tokens: 512,
           temperature: 0.7,
