@@ -22,12 +22,11 @@ export const TextGeneration = () => {
     setIsLoading(true);
 
     try {
-      // Make sure to use the API key with "hf_" prefix if not already included
       const formattedApiKey = apiKey.startsWith('hf_') ? apiKey : `hf_${apiKey}`;
       const hf = new HfInference(formattedApiKey);
       
       const result = await hf.textGeneration({
-        model: 'gpt2',
+        model: 'Qwen/Qwen2.5-Coder-32B-Instruct',
         inputs: input,
         parameters: {
           max_new_tokens: 100,
