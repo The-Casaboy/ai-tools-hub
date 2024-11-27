@@ -1,4 +1,4 @@
-import { Home, MessageSquare, Image, Video, GitBranch } from "lucide-react";
+import { Home, Image, Video, GitBranch, Type } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const Sidebar = () => {
@@ -6,7 +6,7 @@ export const Sidebar = () => {
   
   const links = [
     { icon: Home, label: "Dashboard", path: "/" },
-    { icon: MessageSquare, label: "AI Assistant", path: "/chat" },
+    { icon: Type, label: "Text Generation", path: "/text" },
     { icon: Image, label: "Image Generation", path: "/image" },
     { icon: Video, label: "Video Creation", path: "/video" },
     { icon: GitBranch, label: "Diagrams", path: "/diagrams" },

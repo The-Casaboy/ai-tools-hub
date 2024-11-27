@@ -4,7 +4,6 @@ import { Toaster } from "sonner";
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { UserProfile } from "./components/UserProfile";
-import { ChatAssistant } from "./components/ChatAssistant";
 import { TextGeneration } from "./components/TextGeneration";
 import { User } from "./types";
 
@@ -35,7 +34,6 @@ const App = () => {
           <div className="container py-8">
             <Routes>
               <Route path="/" element={<div>Dashboard</div>} />
-              <Route path="/chat" element={<ChatAssistant />} />
               <Route path="/text" element={<TextGeneration />} />
               <Route path="/image" element={<div>Image Generation</div>} />
               <Route path="/video" element={<div>Video Creation</div>} />
